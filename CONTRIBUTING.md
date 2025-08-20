@@ -50,7 +50,7 @@ When making changes, be mindful of the scope of your change and any potential im
 
 If you're interested in contributing a new MCP server to the project, we have a comprehensive guide to help you get started:
 
-**[📖 MCP Server Guide](MCP_SERVER_GUIDE.md)** - A complete guide covering:
+**[📖 MCP Server Guide](GUIDE.md)** - A complete guide covering:
 - What MCP servers are and how they work
 - How to design effective tools for AI agents
 - Development best practices and testing requirements

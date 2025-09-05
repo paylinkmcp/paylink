@@ -4,7 +4,7 @@
   </picture>
 </div>
 
-<h1 align="center">PayLink - AI-Powered Payment Integration Framework</h1>
+<h1 align="center">AI-Powered Payment Integration Framework</h1>
 <p align="center"><strong>Seamlessly integrate multiple payment providers (M-Pesa, Airtel Money, KCB, Equity) into your AI applications with our comprehensive MCP-based framework.</strong></p>
 
 <div align="center">
@@ -14,8 +14,21 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
 [![MCP](https://img.shields.io/badge/MCP-Protocol-orange.svg)](https://modelcontextprotocol.io)
+![Contributors](https://img.shields.io/github/contributors/paylinkmcp/paylink)
+![Good First Issues](https://img.shields.io/github/issues/paylinkmcp/paylink/good%20first%20issue)
 
 </div>
+
+## 📑 Table of Contents
+- [🚀 What is PayLink?](#-what-is-paylink)
+- [✨ Key Features](#-key-features)
+- [🚀 Quick Start - Get Payment Processing in 5 Minutes](#-quick-start---get-payment-processing-in-5-minutes)
+- [💳 Available Payment Providers](#-available-payment-providers)
+- [🛣️ Roadmap](#️-roadmap)
+- [📚 Resources & Community](#-resources--community)
+- [🤝 Contributing](#-contributing)
+- [🔒 Security](#-security)
+- [📜 License](#-license)
 
 ## 🚀 What is PayLink?
 
@@ -29,8 +42,6 @@ PayLink is an open-source framework designed to simplify payment integrations fo
 - **🚀 Instant Setup**: Get payment processing running in minutes
 - **📱 Mobile-First**: Optimized for mobile payment workflows
 - **🌍 East Africa Focus**: Specialized for regional payment systems
-
-
 
 ## 🚀 Quick Start - Get Payment Processing in 5 Minutes
 
@@ -109,6 +120,13 @@ python server.py
 | **Equity Bank** | 🚧 In Development | Bank Transfers | `paylink-equity:latest` |
 | **KCB** | 🚧 In Development | Bank Transfers | `paylink-kcb:latest` |
 
+## 🛣️ Roadmap
+
+- [ ] Complete M-Pesa STK Push support
+- [ ] Add Airtel Money USSD support
+- [ ] Implement Equity and KCB bank transfers
+- [ ] Publish SDK for Node.js and Go
+- [ ] Add webhook event framework
 
 ## 📚 Resources & Community
 
@@ -128,6 +146,10 @@ We love contributions! Whether you want to:
 - 🎨 Enhance existing servers
 
 Check out our [Contributing Guide](CONTRIBUTING.md) to get started!
+
+## 🔒 Security
+
+If you discover a security vulnerability, please see our [Security Policy](SECURITY.md) for how to report it responsibly.
 
 ## 📜 License
 

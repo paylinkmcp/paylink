@@ -18,33 +18,6 @@ mpesa_access_token_context: ContextVar[str] = ContextVar("mpesa_access_token")
 mpesa_token_expiry_context: ContextVar[datetime] = ContextVar("mpesa_token_expiry")
 
 
-
-def _get_env_credentials() -> tuple[str, str]:
-    """Get M-Pesa API credentials from environment variables."""
-    consumer_key = os.getenv("MPESA_CONSUMER_KEY")
-    consumer_secret = os.getenv("MPESA_CONSUMER_SECRET")
-
-    if not consumer_key or not consumer_secret:
-        raise RuntimeError(
-            "M-Pesa API credentials not found. Set MPESA_CONSUMER_KEY/CONSUMER_KEY and "
-            "MPESA_CONSUMER_SECRET/CONSUMER_SECRET environment variables."
-        )
-
-    return consumer_key, consumer_secret
-
-
-def _get_mpesa_base_url() -> str:
-    """Get the appropriate M-Pesa API base URL based on environment."""
-    # Allow both MPESA_ENVIRONMENT and ENVIRONMENT variables
-    env_var = os.getenv("MPESA_ENVIRONMENT", "sandbox")
-    is_production = env_var.lower() == "production"
-
-    if is_production:
-        return os.getenv("MPESA_PRODUCTION_URL")
-    else:
-        return os.getenv("MPESA_SANDBOX_URL")
-
-
 def _create_basic_auth_header(consumer_key: str, consumer_secret: str) -> str:
     """Create Basic Auth header for M-Pesa API authentication."""
     credentials = f"{consumer_key}:{consumer_secret}"
@@ -85,12 +58,12 @@ def get_mpesa_access_token(force_refresh: bool = False) -> str:
             pass
 
     # Get fresh credentials and request new token
-    consumer_key, consumer_secret = _get_env_credentials()
-    base_url = _get_mpesa_base_url()
-    oauth_endpoint = os.getenv("MPESA_OAUTH_ENDPOINT", "/oauth/v1/generate")
+    consumer_key = os.getenv("MPESA_CONSUMER_KEY")
+    consumer_secret = os.getenv("MPESA_CONSUMER_SECRET")
+    base_url = os.getenv("MPESA_BASE_URL")
 
     # Prepare the request
-    url = f"{base_url}{oauth_endpoint}"
+    url = f"{base_url}/oauth/v1/generate"
     headers = {
         "Authorization": _create_basic_auth_header(consumer_key, consumer_secret),
         "Content-Type": "application/json",

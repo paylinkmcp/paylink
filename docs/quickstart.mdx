@@ -11,6 +11,8 @@ This quickstart shows you how to use the PayLink SDK directly to initiate paymen
 
 <Steps>
   <Step title="Initialize the SDK">
+    Create a `PayLink` client that points to your MCP server.
+    Here we use a local M‑Pesa server at `http://localhost:5002/mcp`.
     ```python
     from paylink import PayLink
 
@@ -22,11 +24,8 @@ This quickstart shows you how to use the PayLink SDK directly to initiate paymen
 
 
   <Step title="List available tools">
-    Tools are functions that the AI can use to interact with the world. They should be well documented.
-    
-    Run the following code to list available tools:
-
-    In this example only one tool is available: `stk_push`.
+    Tools are server‑exposed actions. `list_tools()` returns names and metadata
+    so you can call them by name. In this quickstart, only `stk_push` is available.
     
     ```python
     tools = await paylink_client.list_tools()
@@ -36,20 +35,32 @@ This quickstart shows you how to use the PayLink SDK directly to initiate paymen
   </Step>
 
   <Step title="Initiate a payment (STK Push)">
+    STK Push prompts the customer to approve payment on their phone.
+    Send the fields below, parse the JSON response, and check `status`.
     ```python
     import json
 
-    tool_name = "stk_push"
-    payment_args = {
+    # Prepare request
+    request = {
         "amount": "10",
         "phone_number": "254712345678",
         "account_reference": "ORDER123",
-        "transaction_desc": "TestPayment"
+        "transaction_desc": "TestPayment",
     }
 
-    response = await paylink_client.call_tool(tool_name, payment_args)
+    # Invoke tool and pretty‑print result
+    response = await paylink_client.call_tool("stk_push", request)
     result = json.loads(response.content[0].text)
     print(json.dumps(result, indent=2))
+
+    # Minimal success check
+    assert result.get("status") == "success", result
     ```
   </Step>
 </Steps>
+
+Quick recap:
+
+- SDK initialized to your MCP server
+- Tools listed and how to call them
+- STK Push payment initiated and response parsed

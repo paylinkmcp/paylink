@@ -21,7 +21,7 @@ CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 if CURRENT_DIR not in sys.path:
     sys.path.insert(0, CURRENT_DIR)
 
-from src.tools.tool import get_mpesa_tools 
+from src.tools.tool import get_mpesa_tools
 from src.handlers.stk_push import stk_push_handler
 
 load_dotenv()
@@ -58,7 +58,8 @@ def main(port: int, log_level: str, json_response: bool) -> int:
     @app.list_tools()
     async def list_tools() -> list[Tool]:
         tools = get_mpesa_tools()
-        logger.info(f"Listing tools: {tools}")
+        tool_names = [tool.name for tool in tools]
+        logger.info(f"Listing tools: {tool_names}")
         return tools
 
     @app.call_tool()

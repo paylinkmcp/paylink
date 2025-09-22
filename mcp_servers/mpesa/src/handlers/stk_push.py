@@ -24,11 +24,8 @@ async def stk_push_handler(arguments: dict[str, Any]) -> str:
                 logger.warning(f"Missing required field: '{field}'")
                 raise ValueError(f"Missing required field: '{field}'")
 
-        # Get configuration from environment
-        if os.getenv("MPESA_ENVIRONMENT") == "production":
-            base_url = os.getenv("MPESA_PRODUCTION_URL")
-        else:
-            base_url = os.getenv("MPESA_SANDBOX_URL")
+       
+        base_url = os.getenv("MPESA_BASE_URL")
             
         logger.info(f"Using base URL: {base_url}")
         

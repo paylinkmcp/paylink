@@ -1,0 +1,71 @@
+---
+title: "LangGraph example"
+description: "Build a minimal agent workflow using LangGraph with a runnable Python example"
+---
+
+Use LangGraph to orchestrate multi-step, stateful agent workflows. This example shows a minimal graph that takes an input message, adds an automated response node, and returns the result.
+
+## Prerequisites
+
+- Python 3.10+
+- Install dependencies:
+
+```bash
+pip install langgraph
+```
+
+## Minimal example (Python)
+
+```python main.py
+from typing import TypedDict, List
+from langgraph.graph import StateGraph, END
+
+# Define the graph state structure
+class ConversationState(TypedDict):
+    messages: List[str]
+
+# Node: add an automated response
+
+def respond(state: ConversationState) -> ConversationState:
+    user_last_message = state["messages"][-1] if state["messages"] else ""
+    assistant_reply = f"You said: {user_last_message}. This is a response from the graph."
+    return {"messages": state["messages"] + [assistant_reply]}
+
+# Build the graph
+builder = StateGraph(ConversationState)
+
+builder.add_node("respond", respond)
+
+# Start at the respond node and then end
+builder.set_entry_point("respond")
+builder.add_edge("respond", END)
+
+# Compile into an executable app
+app = builder.compile()
+
+if __name__ == "__main__":
+    initial_state: ConversationState = {"messages": ["Hello LangGraph"]}
+    # Stream returns intermediate steps; iterate to observe progression
+    for update in app.stream(initial_state):
+        print(update)
+```
+
+### Expected output
+
+```text
+{'respond': {'messages': ['Hello LangGraph', 'You said: Hello LangGraph. This is a response from the graph.']}}
+```
+
+## How it works
+
+- **State**: `ConversationState` holds a list of `messages` that persists through the graph.
+- **Node**: `respond` reads the latest message and appends an automated reply.
+- **Edges**: The flow enters `respond` and then immediately terminates (`END`).
+
+## Next steps
+
+- Add more nodes for tools, retrieval, or function calling.
+- Branch conditionally based on state values.
+- Explore persistence and memory patterns.
+
+For advanced patterns, see the official LangGraph documentation: [Build with LangGraph](https://langchain-ai.github.io/langgraph/).

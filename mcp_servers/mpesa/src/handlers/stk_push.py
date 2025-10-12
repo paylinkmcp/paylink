@@ -57,7 +57,7 @@ async def stk_push_handler(arguments: dict[str, Any]) -> str:
             "TransactionDesc": arguments["transaction_desc"],
         }
 
-        logger.info(f"Sending STK push request with payload: {json.dumps(payload)}")
+        # logger.info(f"Sending STK push request with payload: {json.dumps(payload)}")
 
         # Make request to M-Pesa STK push endpoint
         url = f"{base_url}/mpesa/stkpush/v1/processrequest"

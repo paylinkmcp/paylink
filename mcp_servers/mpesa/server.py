@@ -2,6 +2,7 @@ import logging
 import os
 import sys
 import click
+import uuid
 from mcp.server.lowlevel import Server
 from mcp.types import TextContent, Tool
 from mcp.server.streamable_http_manager import StreamableHTTPSessionManager
@@ -16,19 +17,18 @@ from typing import Any
 from dotenv import load_dotenv
 from starlette.responses import Response
 
-# Ensure local imports work whether executed from src/ or project root
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-if CURRENT_DIR not in sys.path:
-    sys.path.insert(0, CURRENT_DIR)
 
 from src.tools.tool import get_mpesa_tools
 from src.handlers.stk_push import stk_push_handler
+from paylink_tracer import paylink_tracer
 
 load_dotenv()
 
 # Configure logging
 logger = logging.getLogger(__name__)
 MPESA_MCP_SERVER_PORT = int(os.getenv("MPESA_MCP_SERVER_PORT", "5002"))
+
+# request_headers_map is provided by tracer.context
 
 
 @click.command()
@@ -47,7 +47,6 @@ MPESA_MCP_SERVER_PORT = int(os.getenv("MPESA_MCP_SERVER_PORT", "5002"))
     help="Enable JSON responses for StreamableHTTP",
 )
 def main(port: int, log_level: str, json_response: bool) -> int:
-    # Configure logging
     logging.basicConfig(
         level=getattr(logging, log_level.upper()),
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -58,31 +57,36 @@ def main(port: int, log_level: str, json_response: bool) -> int:
     @app.list_tools()
     async def list_tools() -> list[Tool]:
         tools = get_mpesa_tools()
-        tool_names = [tool.name for tool in tools]
-        logger.info(f"Listing tools: {tool_names}")
+        # logger.info(f"Listing tools: {[t.name for t in tools]}")
         return tools
 
     @app.call_tool()
-    async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
-        logger.info(f"Calling tool '{name}'")
+    @paylink_tracer
+    async def call_tool(
+        name: str,
+        arguments: dict[str, Any],
+        request_id: str | None = None,
+    ) -> list[TextContent]:
+        # headers = request_headers_map.get(request_id, {})
+        # logger.info(f"Calling tool '{name}' with headers={headers}")
 
         try:
             if name == "stk_push":
+                # pass headers to handler
                 result = await stk_push_handler(arguments)
             else:
-                logger.error(f"Unknown tool name: {name}")
+                # logger.error(f"Unknown tool name: {name}")
                 return [TextContent(type="text", text=f"Error: Unknown tool '{name}'")]
 
-            logger.info(f"Tool '{name}' completed successfully")
+            # logger.info(f"Tool '{name}' completed successfully")
             return [TextContent(type="text", text=result)]
 
         except ValueError as e:
-            # Likely argument issue
-            logger.warning(f"Invalid input for tool '{name}': {e}")
+            # logger.warning(f"Invalid input for tool '{name}': {e}")
             return [TextContent(type="text", text=f"Invalid input: {str(e)}")]
 
         except Exception as e:
-            logger.exception(f"Error running tool '{name}': {e}")
+            # logger.exception(f"Error running tool '{name}': {e}")
             return [
                 TextContent(
                     type="text",
@@ -104,7 +108,6 @@ def main(port: int, log_level: str, json_response: bool) -> int:
             logger.exception("SSE: unhandled error")
         return Response()
 
-    # Create the session manager with stateless true stateless mode
     session_manager = StreamableHTTPSessionManager(
         app=app,
         event_store=None,
@@ -115,40 +118,49 @@ def main(port: int, log_level: str, json_response: bool) -> int:
     async def handle_streamable_http(
         scope: Scope, receive: Receive, send: Send
     ) -> None:
+        request_id = str(uuid.uuid4())
         try:
+            # Process headers, handling multiple values for the same key
+            raw_headers = scope.get("headers", [])
+            headers = {}
+            for k, v in raw_headers:
+                key = k.decode().lower()
+                value = v.decode()
+                if key in headers:
+                    # If key already exists, convert to list or append to existing list
+                    if isinstance(headers[key], list):
+                        headers[key].append(value)
+                    else:
+                        headers[key] = [headers[key], value]
+                else:
+                    headers[key] = value
+            # request_headers_map[request_id] = headers
+            scope["request_id"] = request_id
+            # Set ContextVar for downstream access (e.g., tracer)
+            # current_request_id.set(request_id)
             await session_manager.handle_request(scope, receive, send)
+
         except Exception:
             logger.exception("StreamableHTTP: unhandled error")
 
     @contextlib.asynccontextmanager
     async def lifespan(app: Starlette) -> AsyncIterator[None]:
         async with session_manager.run():
-            logger.info("Application started with StreamableHTTP Session Manager")
+            # logger.info("Application started with StreamableHTTP Session Manager")
             try:
                 yield
             finally:
                 logger.info("Application shutting down...")
 
     routes = [
-        # SSE routes
         Route("/sse", endpoint=handle_sse, methods=["GET"]),
         Mount("/messages/", app=sse.handle_post_message),
-        # StreamableHTTP route
         Mount("/mcp", app=handle_streamable_http),
     ]
 
-    # Create an ASGI application using the transport
-    starlette_app = Starlette(
-        debug=True,
-        lifespan=lifespan,
-        routes=routes,
-    )
+    starlette_app = Starlette(debug=True, lifespan=lifespan, routes=routes)
 
-    uvicorn.run(
-        starlette_app,
-        host="0.0.0.0",
-        port=port,
-    )
+    uvicorn.run(starlette_app, host="0.0.0.0", port=port)
 
     return 0
 

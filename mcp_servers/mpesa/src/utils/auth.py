@@ -35,11 +35,16 @@ def _is_token_expired() -> bool:
         return True
 
 
-def get_mpesa_access_token(force_refresh: bool = False) -> str:
+async def get_mpesa_access_token(
+    consumer_key: str, consumer_secret: str, base_url: str, force_refresh: bool = False
+) -> str:
     """
     Get a valid M-Pesa access token, refreshing if necessary.
 
     Args:
+        consumer_key: M-Pesa consumer key
+        consumer_secret: M-Pesa consumer secret
+        base_url: M-Pesa base URL
         force_refresh: If True, force a new token request regardless of expiry
 
     Returns:
@@ -57,11 +62,6 @@ def get_mpesa_access_token(force_refresh: bool = False) -> str:
         except LookupError:
             pass
 
-    # Get fresh credentials and request new token
-    consumer_key = os.getenv("MPESA_CONSUMER_KEY")
-    consumer_secret = os.getenv("MPESA_CONSUMER_SECRET")
-    base_url = os.getenv("MPESA_BASE_URL")
-
     # Prepare the request
     url = f"{base_url}/oauth/v1/generate"
     headers = {
@@ -73,8 +73,8 @@ def get_mpesa_access_token(force_refresh: bool = False) -> str:
     logger.info("Requesting new M-Pesa access token")
 
     try:
-        with httpx.Client(timeout=30) as client:
-            response = client.get(url, headers=headers, params=params)
+        async with httpx.AsyncClient(timeout=30) as client:
+            response = await client.get(url, headers=headers, params=params)
             response.raise_for_status()
 
         token_data: Dict[str, Any] = response.json()
@@ -105,7 +105,6 @@ def get_mpesa_access_token(force_refresh: bool = False) -> str:
     except (KeyError, ValueError, TypeError) as e:
         logger.error(f"Invalid response format from M-Pesa OAuth endpoint: {e}")
         raise RuntimeError(f"Invalid response format from M-Pesa OAuth endpoint: {e}")
-
 
 
 if __name__ == "__main__":

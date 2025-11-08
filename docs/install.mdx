@@ -13,16 +13,59 @@ To install the core PayLink package:
 
 <CodeGroup>
 ```bash uv
-  uv add --prerelease=allow paylink
-  ```
-  
-  ```bash pip
-  pip install --pre -U paylink
-  ```
+uv add --prerelease=allow paylink
+```
 
-  
+```bash pip
+pip install --pre -U paylink
+```
 </CodeGroup>
 
+
+## Configure your environment
+
+After installation, create an isolated Python environment and populate a `.env` file that the SDK can read at runtime:
+
+<CodeGroup>
+```bash uv
+uv venv .venv
+source .venv/bin/activate
+touch .env  # or copy from a template if you have one
+```
+
+```bash pip
+python -m venv .venv
+source .venv/bin/activate
+touch .env  # or copy from a template if you have one
+```
+</CodeGroup>
+
+Add the following variables to your environment (you can place them in `.env` or export them directly in your shell):
+
+```bash
+PAYLINK_API_KEY="your api key"
+PAYLINK_PROJECT="your project name"
+PAYLINK_TRACING="enabled"
+```
+
+Replace the sample API key with your own secret before running `paylink`.
+
+### How to create your project and generate API key on PayLink Platform.
+
+<Steps>
+  <Step title="Create your PayLink account">
+    Visit the [PayLink dashboard](https://paylink.ai) and sign up or sign in with your credentials.
+    ![PayLink dashboard sign-up screen](/images/install/signup.png)
+  </Step>
+  <Step title="Create a project">
+    From the dashboard home, navigate to projects tab and create a new project. The project name becomes your `PAYLINK_PROJECT` value.
+    ![Create project screenshot](/images/install/create_project.png)
+  </Step>
+  <Step title="Generate and store your API key">
+    Navigate to **API Keys**, and create a new key. Copy the value, store it securely as `PAYLINK_API_KEY`, and restart any services or shells that need the updated environment variables.
+    ![API key creation screenshot](/images/install/generate_api_key.png)
+  </Step>
+</Steps>
 
 <Tip>
   After installation, configure credentials and register the MCP server with your agent. See the [Quickstart](./quickstart)  guides for environment variables and local setup.

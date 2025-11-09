@@ -1,0 +1,175 @@
+---
+title: "Agent to Human Integration"
+description: "Implement human-approved payment flows with PayLink"
+---
+
+Enable your agent to initiate payments that require human approval. This pattern keeps users in control while still letting agents automate payment requests.
+
+## <Icon icon="user-shield" size={20} /> Overview
+
+In the Agent to Human model, your agent asks PayLink to start a payment, and a human completes it. Use this when compliance or trust requires explicit user approval.
+
+**Common use cases:**
+- AI assistant purchases that users must authorize
+- Agent-triggered invoices or subscriptions
+- Payments that rely on M-Pesa STK push, PayPal approvals, or similar
+
+## <Icon icon="list-check" size={20} /> Prerequisites
+
+<Steps>
+  <Step title="Install PayLink">
+    Make sure PayLink is installed and configured locally. Follow the [Installation](/start-building/install) guide if you haven't already.
+  </Step>
+
+  <Step title="Configure your environment">
+    Create a `.env` file with your PayLink credentials and provider settings.
+
+    ```bash
+    PAYLINK_API_KEY="paylink api key"
+    PAYLINK_PROJECT="Paylink project"
+    PAYLINK_TRACING="enabled"
+
+    PAYMENT_PROVIDER=["mpesa"]
+
+    MPESA_BUSINESS_SHORTCODE="your_shortcode"
+    MPESA_CONSUMER_SECRET="your_consumer_secret"
+    MPESA_CONSUMER_KEY="your_consumer_key"
+    MPESA_CALLBACK_URL="your_callback_url"
+    MPESA_PASSKEY="mpesa_passkey"
+    MPESA_BASE_URL="nhhnh"
+    ```
+
+    Replace the placeholder values with your real credentials.
+  </Step>
+
+  <Step title="Create a PayLink account">
+    Sign up on the PayLink dashboard and confirm your email.
+
+    <Frame>
+      <img src="/images/install/signup.png" alt="PayLink sign up form" />
+    </Frame>
+  </Step>
+
+  <Step title="Create your project">
+    After signing in, create a new project to organize your agent configuration.
+
+    <Frame>
+      <img src="/images/install/create_project.png" alt="Create project screen in PayLink dashboard" />
+    </Frame>
+  </Step>
+
+  <Step title="Generate an API key">
+    Generate a PayLink API key for the project and copy it into your `.env` file.
+
+    <Frame>
+      <img src="/images/install/generate_api_key.png" alt="Generate API key screen" />
+    </Frame>
+  </Step>
+</Steps>
+
+<Tip>
+  Use sandbox credentials while testing to avoid live charges.
+</Tip>
+
+## <Icon icon="wand-magic-sparkles" size={20} /> Implementation
+
+The example below demonstrates how to trigger an M-Pesa STK Push using PayLink. You will initialize the `MpesaTools` client, inspect available payment tools, and invoke the `stk_push` tool so the user receives the familiar SIM Toolkit prompt to approve the payment.
+
+<Steps>
+  <Step title="Initialize Mpesa tools">
+    Import the PayLink SDK and create an `MpesaTools` client. The client uses your environment variables automatically.
+
+    ```python
+    from paylink import MpesaTools
+
+    client = MpesaTools()
+    ```
+  </Step>
+
+  <Step title="Discover available payment tools">
+    List the tools exposed by the M-Pesa integration so you know what actions are available.
+
+    ```python
+    tools = await client.list_tools()
+    print(tools)
+    ```
+
+    This returns metadata for each tool, including the `stk_push` flow used for human approvals.
+
+    <AccordionGroup>
+      <Accordion title="Sample list_tools() response">
+        ```python
+        [Tool(name='stk_push', title=None, description="Initiates M-Pesa Express (STK Push) payment on behalf of a customer. Sends a payment prompt to the customer's phone requesting them to enter their M-Pesa PIN to authorize and complete payment.", inputSchema={'type': 'object', 'properties': {'amount': {'type': 'string', 'description': 'Amount to be transacted (only whole numbers supported).', 'pattern': '^[0-9]+$'}, 'phone_number': {'type': 'string', 'description': "Customer's M-Pesa registered phone number to receive the payment prompt (format: 2547XXXXXXXX).", 'pattern': '^2547[0-9]{8}$'}, 'account_reference': {'type': 'string', 'description': 'Reference identifier for the transaction (max 12 characters). This will be displayed to the customer in the payment prompt.', 'maxLength': 12}, 'transaction_desc': {'type': 'string', 'description': 'Description of what the payment is for (max 13 characters).', 'maxLength': 13}}, 'required': ['amount', 'phone_number', 'account_reference', 'transaction_desc']}, outputSchema=None, icons=None, annotations=None, meta=None)]
+        ```
+      </Accordion>
+    </AccordionGroup>
+  </Step>
+
+  <Step title="Trigger an STK Push payment">
+    Call the `stk_push` tool and pass the required parameters (amount, phone number, references, and description).
+
+    ```python
+    tool_name = "stk_push"
+
+    params = {
+        "amount": "100",
+        "phone_number": "254797357665",
+        "account_reference": "test",
+        "transaction_desc": "test"
+    }
+
+    response = await client.call_tool(tool_name, params)
+    print(response)
+    ```
+
+    The response includes the STK Push status and checkout request ID. Share the approval prompt details with your user.
+  </Step>
+
+  <Step title="Review execution traces">
+    For an overview of the call, return to the PayLink dashboard. Open **Project Tracing**, pick the project you are working on, and inspect the captured logs for the `stk_push` run.
+
+    <Frame>
+      <img src="/images/tracing/view_trace.png" alt="Trace details for an STK Push call" />
+    </Frame>
+  </Step>
+</Steps>
+
+<Note>
+  Run these calls inside an async event loop (for example, with `asyncio.run`).
+</Note>
+
+## <Icon icon="book-open" size={20} /> Complete example
+
+```python
+import asyncio
+from paylink import MpesaTools
+
+async def main():
+    client = MpesaTools()
+
+    tools = await client.list_tools()
+    print("Available tools:", tools)
+
+    params = {
+        "amount": "100",
+        "phone_number": "254797357665",
+        "account_reference": "test",
+        "transaction_desc": "test"
+    }
+
+    response = await client.call_tool("stk_push", params)
+    print("STK Push response:", response)
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+## <Icon icon="flag-checkered" size={20} /> What you achieved
+
+<Check>
+  - You provisioned PayLink credentials and connected the M-Pesa provider.
+  - You explored the toolkit with `list_tools()` and confirmed the `stk_push` capability.
+  - You triggered a live STK Push flow that prompts users to approve payments from their devices.
+  - Your agent can now reuse this tool inside its loop to request human-approved transactions on demand.
+</Check>
+

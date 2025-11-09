@@ -1,0 +1,153 @@
+---
+title: "Agent to Agent Integration"
+description: "Enable autonomous transactions between AI agents"
+---
+
+Allow agents to transact autonomously without human intervention. This pattern is ideal for agent marketplaces, paid MCP tools, and machine-to-machine commerce.
+
+## <Icon icon="robot" size={20} /> Overview
+
+In the Agent to Agent model, each agent controls a wallet. Agents can pay one another directly using blockchain-backed transfers.
+
+**Common use cases:**
+- Agents purchasing or selling data, APIs, or services
+- Automated settlement of usage-based pricing
+- Monetization of MCP tools and capabilities
+
+## <Icon icon="list-check" size={20} /> Prerequisites
+
+- PayLink installed ([Installation](/start-building/install))
+- Blockchain wallet configuration (Tron Nile, Ethereum Sepolia, etc.)
+- Access to testnet funds for development
+
+```bash
+PAYLINK_URL=https://api.paylink.dev
+PAYLINK_TRANSPORT=http
+PAYLINK_WALLET_CONNECTION_STRING=tron+https://nile.trongrid.io
+```
+
+<Warning>
+  Treat private keys like production secrets. Store them securely and never commit them to source control.
+</Warning>
+
+## <Icon icon="wand-magic-sparkles" size={20} /> Implementation
+
+<Steps>
+  <Step title="Initialize PayLink">
+    ```python
+    from paylink.client import PayLink
+    from dotenv import load_dotenv
+    import os
+
+    load_dotenv()
+
+    paylink = PayLink(
+        url=os.getenv("PAYLINK_URL"),
+        wallet_connection_string=os.getenv("PAYLINK_WALLET_CONNECTION_STRING"),
+        transport=os.getenv("PAYLINK_TRANSPORT"),
+    )
+    ```
+  </Step>
+
+  <Step title="Create wallets for your agents">
+    ```python
+    buyer = paylink.create_wallet(agent_id="agent-buyer")
+    seller = paylink.create_wallet(agent_id="agent-seller")
+
+    print(f"Buyer wallet: {buyer.address}")
+    print(f"Seller wallet: {seller.address}")
+    ```
+  </Step>
+
+  <Step title="Fund wallets on testnet">
+    ```python
+    paylink.fund_wallet(buyer.address, amount=1.0, currency="TRX")
+    print("Buyer wallet funded with testnet TRX")
+    ```
+  </Step>
+
+  <Step title="Transfer between agents">
+    ```python
+    tx = paylink.transfer(
+        from_agent=buyer.id,
+        to_agent=seller.id,
+        amount=0.02,
+        currency="USD",
+        metadata={"service": "data-analysis"}
+    )
+
+    print(f"Transaction hash: {tx.hash}")
+    ```
+  </Step>
+</Steps>
+
+## <Icon icon="book-open" size={20} /> Complete example
+
+```python
+from paylink.client import PayLink
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+paylink = PayLink(
+    url=os.getenv("PAYLINK_URL"),
+    wallet_connection_string=os.getenv("PAYLINK_WALLET_CONNECTION_STRING"),
+    transport=os.getenv("PAYLINK_TRANSPORT"),
+)
+
+class ServiceAgent:
+    def __init__(self, agent_id: str, service_name: str, price: float):
+        self.agent_id = agent_id
+        self.service_name = service_name
+        self.price = price
+        self.wallet = paylink.create_wallet(agent_id=agent_id)
+
+    def provide_service(self, payload: str) -> str:
+        return f"Processed: {payload}"
+
+def autonomous_payment():
+    buyer = paylink.create_wallet(agent_id="agent-buyer")
+    summarizer = ServiceAgent("agent-summarizer", "summarize", 0.02)
+
+    paylink.fund_wallet(buyer.address, amount=1.0, currency="TRX")
+
+    tx = paylink.transfer(
+        from_agent=buyer.id,
+        to_agent=summarizer.agent_id,
+        amount=summarizer.price,
+        currency="USD",
+        metadata={"service": summarizer.service_name}
+    )
+
+    print(f"Transfer complete: {tx.hash}")
+    result = summarizer.provide_service("Long article about AI")
+    print(result)
+
+autonomous_payment()
+```
+
+## <Icon icon="shield" size={20} /> Safeguards
+
+<AccordionGroup>
+  <Accordion title="Set spending limits">
+    Configure daily limits or maximum transaction amounts for each agent wallet.
+  </Accordion>
+  <Accordion title="Monitor transactions">
+    Periodically retrieve transaction history to detect unexpected behavior.
+  </Accordion>
+  <Accordion title="Alert on large transfers">
+    Trigger notifications or human review for transactions above a defined threshold.
+  </Accordion>
+</AccordionGroup>
+
+## <Icon icon="arrow-right" size={20} /> Next steps
+
+<CardGroup cols={2}>
+  <Card title="Monetize Your Tools" icon="coins" href="/start-building/install">
+    Learn how to require payment before your MCP tools execute.
+  </Card>
+  <Card title="Agent to Human" icon="user-shield" href="/agent-to-human/setup">
+    Capture payment approvals from human users.
+  </Card>
+</CardGroup>

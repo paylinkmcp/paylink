@@ -14,16 +14,43 @@
         "tab": "Guides",
         "groups": [
           {
-            "group": "Getting started",
-            "pages": ["index", "install", "quickstart"]
+            "group": "Overview",
+            "pages": [
+              "overview/welcome",
+              "overview/about",
+              "overview/vision",
+              "overview/partner-program",
+              "overview/get-support"
+            ]
+          },
+          {
+            "group": "Start Building",
+            "expanded": true,
+            "pages": [
+              "start-building/get-started",
+              "start-building/install",
+              {
+                "group": "Integration Patterns",
+                "expanded": true,
+                "pages": [
+                  "agent-to-human/setup",
+                  "agent-to-agent/setup"
+                ]
+              }
+            ]
           },
           {
             "group": "Examples",
             "pages": ["examples/langgraph"]
+          },
+          {
+            "group": "Resources",
+            "pages": ["resources/concepts"]
           }
         ]
       }
     ],
+
     "global": {
       "anchors": [
         {
@@ -35,6 +62,16 @@
           "anchor": "Discord",
           "href": "https://discord.gg/bhs62pADCe",
           "icon": "discord"
+        },
+        {
+          "anchor": "Blogs",
+          "href": "https://external-link.com/blog",
+          "icon": "book-open"
+        },
+        {
+          "anchor": "GitHub",
+          "href": "https://github.com/paylinkmcp/paylink",
+          "icon": "github"
         }
       ]
     }

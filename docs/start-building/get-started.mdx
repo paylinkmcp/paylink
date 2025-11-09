@@ -1,0 +1,60 @@
+---
+title: "Get Started"
+description: "Choose the right payment integration pattern for your AI agent"
+---
+
+PayLink empowers you to add payment capabilities to your AI agents. Choose the integration pattern that best fits your use case.
+
+## Integration Patterns
+
+PayLink supports two primary integration models, each designed for different use cases and levels of autonomy.
+
+### Agent to Human
+
+Your agent initiates a payment that requires human approval before completion. This pattern keeps users in control while enabling agents to trigger payment requests.
+
+**Best for:**
+- **Consumer‑facing** applications where users must approve transactions
+- **Compliance requirements** that mandate human oversight
+- Payment providers requiring user authentication M‑Pesa STK Push
+- Applications where trust and transparency are critical
+
+**How it works:**
+1. Your agent identifies a need for payment
+2. Agent initiates a payment request via PayLink
+3. User receives a prompt
+4. User authorizes the transaction
+5. Payment processes and agent receives confirmation
+
+### Agent to Agent
+
+Your agent transacts autonomously using its own wallet. No human confirmation required for each transaction.
+
+**Best for:**
+- Autonomous agent ecosystems
+- Micropayment scenarios requiring speed
+- Agent‑to‑agent marketplaces
+- Monetized MCP tools and services
+- Machine‑to‑machine payments
+
+**How it works:**
+1. Agent receives a wallet with funds
+2. Agent autonomously decides to make a payment
+3. Transaction executes immediately via blockchain
+4. Both agents receive instant confirmation
+
+## Next Steps
+
+Ready to integrate PayLink into your agent? Start by installing the SDK and choosing your integration pattern.
+
+<CardGroup cols={3}>
+  <Card title="Install PayLink" icon="download" href="/start-building/install">
+    Install the PayLink SDK and configure your environment
+  </Card>
+  <Card title="Agent to Human" icon="user-shield" href="/agent-to-human/setup">
+    Implement human-approved payment flows with user authorization
+  </Card>
+  <Card title="Agent to Agent" icon="robot" href="/agent-to-agent/setup">
+    Enable autonomous agent-to-agent payments without human intervention
+  </Card>
+</CardGroup>

@@ -1,0 +1,185 @@
+---
+title: "About PayLink"
+description: "Learn about PayLink and its capabilities"
+---
+
+## What is PayLink?
+
+PayLink is a developer toolkit that enables seamless payment integration for AI agents.
+
+It allows developers to give agents the ability to handle payments—whether interacting with humans or autonomously transacting with other agents. PayLink provides the infrastructure, tools, and workflows so that agents can pay, get paid, or facilitate transactions without developers having to build complex payment systems from scratch.
+
+## Key Points About PayLink
+
+- Supports Agent-to-Human Payments:
+  - Agents can request payments or perform transactions where humans approve or confirm the action.
+  - Example: An agent prompts a user to pay for a service or enter a PIN to complete a transaction.
+
+- Supports Agent-to-Agent Payments:
+  - Agents can autonomously transact with other agents.
+  - Example: One agent pays another for a service, and the service result is delivered automatically.
+
+- Developer-Centric:
+  - Designed for developers building agents to quickly integrate payments into their workflows.
+  - Reduces friction by handling wallet access, transaction management, and other payment logistics.
+
+- Future-Ready:
+  - Prepares the ecosystem for autonomous agent economies where agents can exchange value independently.
+
+## Problems PayLink Solves
+
+As AI agents evolve from simple tools into independent actors, they encounter new challenges when it comes to handling payments. Traditional payment systems are built for humans, not autonomous agents, which creates friction and limits what agents can do. PayLink addresses these gaps.
+
+### 1. Human-Dependent Payment Workflows
+
+**Problem:** Traditional payment systems assume a human is always involved (entering PINs, approving transactions, etc.).
+
+**Impact:** Agents cannot autonomously transact or scale without human intervention.
+
+**PayLink Solution:** Provides tools for both agent-to-human and agent-to-agent payments, allowing agents to initiate payments while still optionally involving humans when necessary.
+
+### 2. Lack of Autonomous Agent Payment Infrastructure
+
+**Problem:** Agents cannot pay each other or receive payments independently using current rails.
+
+**Impact:** Limits the development of fully autonomous AI ecosystems and service exchanges between agents.
+
+**PayLink Solution:** Equips agents with wallets and a secure transaction framework so they can pay for services or get paid automatically.
+
+### 3. Complexity for Developers
+
+**Problem:** Building payment integration for AI agents requires handling wallets, transactions, and compliance—often from scratch.
+
+**Impact:** Slows development and increases the risk of errors or security issues.
+
+**PayLink Solution:** Provides a developer toolkit that simplifies payment integration into agent workflows, reducing complexity and development time.
+
+### 4. Fragmented Payment Workflows
+
+**Problem:** Current payment systems are fragmented and not designed for AI ecosystems.
+
+**Impact:** Agents cannot seamlessly interact with multiple services or other agents.
+
+**PayLink Solution:** Creates a unified framework for handling payments across agents and humans, enabling smooth, scalable, and automated financial interactions.
+
+### How PayLink Thinks About Payment Infrastructure
+
+At PayLink, we recognize that payment infrastructure is evolving to support two distinct categories of transactions:
+
+#### 1. Agent-to-Human (Human-in-the-Loop)
+
+This is where an agent initiates a payment, but a human is required to complete the transaction. For example:
+- An agent calls a payment tool to process a purchase
+- The user receives an STK Push notification on their phone
+- The user enters their PIN to authorize the transaction
+- The payment is completed and the agent receives confirmation
+
+This model maintains human oversight and control, ideal for consumer-facing applications and scenarios where human approval is necessary.
+
+#### 2. Agent-to-Agent (Autonomous Transactions)
+
+This is where agents transact autonomously between themselves without human intervention. For example:
+- Agent A requests a service from Agent B
+- Agent A makes payment directly from its wallet
+- Agent B verifies payment and delivers the service
+- Results are returned automatically
+
+This model requires equipping agents with access to their own wallets where they can:
+- **Pay for services** they consume from other agents
+- **Get paid** for services they provide to other agents
+- **Manage funds** autonomously without human intervention
+
+PayLink is building the infrastructure to support both categories, enabling a future where AI agents can participate fully in the digital economy.
+
+## Why PayLink is Different
+
+<CardGroup cols={3}>
+  <Card title="Runs Anywhere" icon="globe">
+    Works with Python, TypeScript (coming soon), mobile apps, servers, and future embedded environments
+  </Card>
+
+  <Card title="Modular & Extensible" icon="puzzle-piece">
+    Pick only the providers you need; extend functionality with custom integrations
+  </Card>
+
+  <Card title="Developer-Centric" icon="code">
+    Clear SDK design, strong typing, extensive docs, and ready-to-use examples
+  </Card>
+
+  <Card title="Secure by Design" icon="shield">
+    Enterprise-grade security with OAuth support and encrypted credential management
+  </Card>
+
+  <Card title="Zero Lock-In" icon="unlock">
+    Open-source, community-driven, and free to adopt with no vendor lock-in
+  </Card>
+
+  <Card title="MCP-Native" icon="plug">
+    Built on Model Context Protocol for seamless AI agent integration
+  </Card>
+</CardGroup>
+
+## What PayLink Provides
+
+PayLink combines core components to deliver a complete payment integration solution:
+
+<CardGroup cols={2}>
+  <Card title="Unified SDK" icon="layer-group">
+    Consistent APIs for payment operations across M-Pesa, Airtel Money, Equity Bank, and KCB
+  </Card>
+
+  <Card title="MCP Integration" icon="robot">
+    Native Model Context Protocol support for AI agents to execute payments autonomously
+  </Card>
+
+  <Card title="Provider Management" icon="building">
+    Simplified credential management and authentication flows for all supported providers
+  </Card>
+
+  <Card title="Examples & Templates" icon="file-code">
+    Production-ready integration templates and reference implementations
+  </Card>
+</CardGroup>
+
+## Supported Payment Providers
+
+PayLink natively supports a broad set of African mobile money and banking providers out of the box:
+
+### Payment Providers
+
+| Provider | Support |
+|----------|---------|
+| M-Pesa | ✅ |
+| Airtel Money | Coming soon |
+| Equity Bank | Coming soon |
+| KCB Bank | Coming soon |
+
+The modular architecture allows new providers, payment methods, or protocols to be added by implementing dedicated modules.
+
+## Supported Wallets & Chains
+
+In addition to mobile money and banking providers, PayLink supports the following wallets and chains:
+
+| Network / Wallet | Support |
+|------------------|---------|
+| TRON | ✅ |
+| Bitcoin | Coming soon |
+| Ethereum & EVM | Coming soon |
+| Ethereum ERC-4337 | Coming soon |
+| TON | Coming soon |
+| TON Gasless | Coming soon |
+| TRON Gasfree | Coming soon |
+| Solana | Coming soon |
+| Spark/Lightning | Coming soon |
+
+## Ready to Start Building?
+
+<Columns cols={2}>
+  <Card title="Getting Started" icon="rocket" href="/quickstart" cta="Start Now" arrow="true">
+    Explore our getting started guide and build your first PayLink integration.
+  </Card>
+
+  <Card title="Installation Guide" icon="book" href="/install" cta="Read Docs" arrow="true">
+    Dive into our installation documentation and set up your environment.
+  </Card>
+</Columns>

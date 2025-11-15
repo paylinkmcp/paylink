@@ -20,9 +20,8 @@ from mcp.server.sse import SseServerTransport
 from src.tools.tool import get_mpesa_tools
 from src.handlers.stk_push import stk_push_handler
 
-# Tracing SDK (multi-tenant, header-first)
-from paylink_tracer import paylink_tracer, set_trace_context_provider
-# NOTE: no configure(...) import or call
+from paylink_tracer import paylink_tracer,set_trace_context_provider
+
 
 load_dotenv()
 
@@ -35,6 +34,8 @@ MPESA_MCP_SERVER_PORT = int(os.getenv("MPESA_MCP_SERVER_PORT", "5002"))
 # Per-request context (populated by ASGI handler)
 request_context: contextvars.ContextVar[dict] = contextvars.ContextVar("request_context")
 trace_context: contextvars.ContextVar[dict] = contextvars.ContextVar("trace_context")
+
+set_trace_context_provider(trace_context)  
 
 # ------------------------------------------------------------------------------
 # Header / trace helpers
@@ -95,8 +96,6 @@ def main(port: int, log_level: str, json_response: bool) -> int:
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
-    # Let the tracer SDK read our per-request trace_context (multi-tenant)
-    set_trace_context_provider(lambda: trace_context.get({}))
 
     app = Server("mpesa_mcp_server")
 
@@ -105,7 +104,7 @@ def main(port: int, log_level: str, json_response: bool) -> int:
         return get_mpesa_tools()
 
     @app.call_tool()
-    @paylink_tracer
+    @paylink_tracer()
     async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
         headers = request_context.get({})
         trace_ctx = trace_context.get({})

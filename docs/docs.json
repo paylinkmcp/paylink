@@ -55,11 +55,6 @@
           "icon": "discord"
         },
         {
-          "anchor": "Blogs",
-          "href": "https://external-link.com/blog",
-          "icon": "book-open"
-        },
-        {
           "anchor": "GitHub",
           "href": "https://github.com/paylinkmcp/paylink",
           "icon": "github"

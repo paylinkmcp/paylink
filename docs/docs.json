@@ -16,7 +16,6 @@
           {
             "group": "Overview",
             "pages": [
-              "overview/welcome",
               "overview/about",
               "overview/vision",
               "overview/partner-program",
@@ -38,14 +37,6 @@
                 ]
               }
             ]
-          },
-          {
-            "group": "Examples",
-            "pages": ["examples/langgraph"]
-          },
-          {
-            "group": "Resources",
-            "pages": ["resources/concepts"]
           }
         ]
       }

@@ -45,8 +45,8 @@
               "resources/organization",
               "resources/project",
               "resources/wallet",
-              "resources/api-key"
-              
+              "resources/api-key",
+              "resources/tracing"
             ]
           }
         ]

@@ -1,0 +1,112 @@
+---
+title: "Tracing"
+description: "Learn about tracing in PayLink and how it helps you monitor payment operations"
+---
+
+## What is Tracing?
+
+Tracing in PayLink is a comprehensive system that records detailed information about every payment operation executed by your AI agents. Each trace captures the complete context of a payment operation, including inputs, outputs, timing, status, and metadata, giving you full visibility into your payment workflows.
+
+## Key Characteristics
+
+- **Project Association**: Every trace belongs to exactly one project
+- **Optional API Key Association**: Traces can be associated with an API key when created via API
+- **Comprehensive Context**: Traces capture tool execution details, request context, environment info, and metadata
+- **Unique Trace ID**: Each trace has a unique identifier for tracking and correlation
+- **Payment-Focused**: Designed specifically to track payment provider operations and tool executions
+
+## What Information is Captured
+
+Traces record comprehensive information about each payment operation:
+
+- **Tool Information**: Name of the tool/operation being executed (e.g., `stk_push`)
+- **Input Arguments**: All parameters passed to the payment tool
+- **Output Response**: The result or response from the payment operation
+- **Execution Status**: Success, error, or pending status
+- **Performance Metrics**: Execution duration in milliseconds
+- **Payment Provider**: Which payment provider was used (M-Pesa, Airtel Money, etc.)
+- **Request Context**: Information about the request (method, path, headers, client IP)
+- **Environment Info**: MCP protocol version, payment provider details
+- **Metadata**: Additional custom information about the operation
+
+## How Tracing Works
+
+### Automatic Trace Creation
+
+When your agent executes a payment operation:
+
+1. **Tool Execution**: Your agent calls a payment tool (e.g., `stk_push`)
+2. **Trace Capture**: PayLink automatically captures all relevant information
+3. **Storage**: The trace is stored and associated with your project
+4. **Dashboard Access**: You can view the trace in the PayLink dashboard
+
+### Trace Association
+
+Traces are automatically associated with:
+- **Project**: Every trace belongs to a specific project
+- **API Key** (optional): Traces created via API can be associated with the API key used
+- **Organization** (indirect): Through the project's organization
+
+## Use Cases
+
+### Debugging Payment Issues
+
+- **Identify Failures**: Quickly identify which payment operations failed and why
+- **Error Analysis**: Review error messages and stack traces
+- **Parameter Validation**: Check if incorrect parameters were passed to payment tools
+
+### Performance Monitoring
+
+- **Response Times**: Monitor how long payment operations take
+- **Bottleneck Identification**: Identify slow payment operations
+- **Optimization**: Use timing data to optimize your payment workflows
+
+### Audit and Compliance
+
+- **Transaction History**: Maintain complete records of all payment operations
+- **Compliance Reporting**: Generate reports for regulatory requirements
+- **Audit Trails**: Track who executed what operations and when
+
+### Analytics and Insights
+
+- **Usage Patterns**: Understand how your agents are using payment tools
+- **Success Rates**: Track success and failure rates of payment operations
+- **Provider Performance**: Compare performance across different payment providers
+
+## Viewing Traces
+
+### In the PayLink Dashboard
+
+1. Log in to your PayLink account
+2. Navigate to **Project Tracing** in the dashboard
+3. Select the project you want to review
+4. Browse and filter traces by date, status, tool name, or other criteria
+5. Click on a trace to view detailed information
+
+### Trace Details
+
+Each trace view shows:
+- Complete input arguments
+- Full output response
+- Execution status and duration
+- Request context and environment information
+- Payment provider details
+- Timestamps for creation and updates
+
+## Trace Lifecycle
+
+1. **Creation**: Trace is created when a payment tool is executed
+2. **Storage**: Trace is stored and associated with the project
+3. **Access**: Traces are accessible through the dashboard or API
+4. **Deletion**: Traces are automatically deleted when their associated project is deleted
+
+
+## Important Notes
+
+- Traces are automatically created—you don't need to manually create them
+- Traces can be created with either `project_id` or `project_name` (when using API key authentication)
+- When using `project_name`, the system resolves it using the API key's organization
+- Traces are automatically deleted when their associated project is deleted
+- API key association is optional but recommended for tracking and access control
+- The `trace_id` field is unique and can be used for external correlation
+

@@ -1,0 +1,64 @@
+---
+title: "Organization"
+description: "Learn about organizations in PayLink and how they structure your account"
+---
+
+## What is an Organization?
+
+An organization in PayLink is the top-level entity that represents your company, team, or business entity. It serves as the primary container for managing multiple projects, API keys, and team members within a single account.
+
+## Key Characteristics
+
+- **Top-Level Container**: Organizations are the highest level of hierarchy in PayLink
+- **Ownership**: Each organization has a single owner (the user who created it)
+- **Team Management**: Organizations can have multiple members with different roles (owner, admin, member)
+- **Logical Separation**: Organizations provide isolation between different business entities
+- **Default Organization**: You can mark one organization as your default for easier access
+
+## Organization Structure
+
+```
+Organization
+├── Projects
+│   ├── Project 1
+│   │   ├── Wallet (automatically created)
+│   │   └── Traces
+│   └── Project 2
+│       ├── Wallet (automatically created)
+│       └── Traces
+├── API Keys
+│   └── Organization-scoped authentication
+└── Team Members
+    ├── Owner
+    ├── Admin
+    └── Member
+```
+
+
+## Use Cases
+
+- **Company Accounts**: Represent your company or business entity
+- **Team Collaboration**: Organize multiple developers working on different projects
+- **Multi-Organization Work**: Developers working for different organizations can create separate organizations for each client or employer, keeping resources completely isolated
+- **Access Control**: Manage permissions and roles at the organization level
+- **Logical Grouping**: Group related projects and resources together
+
+## Creating an Organization
+
+When you sign up for a PayLink account, your first organization is automatically created for you. This makes it easy to get started you can immediately begin creating projects and API keys within your default organization.
+
+You can also create additional organizations at any time. This is particularly useful for developers who work with multiple organizations or companies. For example, if you're a freelance developer working for different clients, you can create separate organizations for each client to keep their projects, API keys, and resources completely isolated.
+
+## Organization Features
+
+- **Multiple Projects**: Create unlimited projects within an organization
+- **Team Invitations**: Invite team members with different roles and permissions
+- **API Key Management**: Create and manage API keys scoped to your organization
+- **Cascade Management**: When an organization is deleted, all associated projects, API keys, and members are automatically removed
+
+## Important Notes
+
+- You must be a member of an organization to create projects or API keys within it
+- Organizations provide logical separation between different business entities
+- Each user can own multiple organizations and be a member of others
+- The organization owner has full control over all resources within the organization

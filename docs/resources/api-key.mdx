@@ -1,0 +1,93 @@
+---
+title: "API Key"
+description: "Understand what an API key is and how to use it in PayLink"
+---
+
+## What is an API Key?
+
+An API key is a secure authentication token that allows programmatic access to the PayLink API. API keys are scoped to organizations and are used to authenticate requests for creating traces, accessing project data, and managing payment operations.
+
+## Key Characteristics
+
+- **Organization-Scoped**: Each API key belongs to exactly one organization
+- **Secure Storage**: API keys are securely stored and never exposed in plain text
+- **One-Time Display**: The actual API key value is only shown once during creation
+- **Revocable**: API keys can be revoked without deletion if compromised
+- **Usage Tracking**: The system tracks when API keys were last used
+- **Bearer Token Authentication**: API keys are used in the Authorization header as Bearer tokens
+
+## How API Keys Work in PayLink
+
+API keys authenticate your application when making requests to PayLink:
+
+- **Authentication**: Validate your application's identity
+- **Organization Access**: Grant access to resources within your organization
+- **Trace Creation**: Enable creating traces for payment operations
+- **Project Access**: Access projects within your organization
+- **Usage Tracking**: Track when and how your API keys are used
+
+
+## Creating an API Key
+
+1. Log in to your PayLink organization
+2. Navigate to the API Keys section
+3. Click "Create New API Key"
+4. Optionally provide a friendly name (e.g., "Production Key", "Development Key")
+5. **Important**: Copy and save your API key immediately—it won't be shown again
+6. Store it securely in your application configuration
+
+## Using Your API Key
+
+Once you have your API key, use it to authenticate API requests:
+
+### HTTP Header Authentication
+
+```bash
+curl -H "Authorization: Bearer pk_your-api-key-here" \
+     https://api.paylink.com/v1/traces
+```
+
+### Python Example
+
+```python
+import requests
+
+headers = {
+    "Authorization": "Bearer pk_your-api-key-here",
+    "Content-Type": "application/json"
+}
+
+response = requests.post(
+    "https://api.paylink.com/v1/traces",
+    headers=headers,
+    json={"project_name": "my-project", "tool_name": "stk_push"}
+)
+```
+
+## Best Practices
+
+- **Store Securely**: Keep API keys in environment variables or secure credential stores
+- **Never Commit**: Never commit API keys to version control systems (use `.env` files and add them to `.gitignore`)
+- **Save Immediately**: Copy and save your API key when it's first displayed you won't see it again
+- **Use Different Keys**: Use separate API keys for development, staging, and production environments
+- **Name Clearly**: Give your API keys descriptive names to identify their purpose
+- **Rotate Regularly**: Periodically create new keys and revoke old ones for enhanced security
+- **Monitor Usage**: Check the "last used" timestamp to identify inactive or potentially compromised keys
+
+## Revoking API Keys
+
+If an API key is compromised or no longer needed:
+1. Navigate to the API Keys section
+2. Find the key you want to revoke
+3. Click "Revoke"
+4. The key will immediately stop working for authentication
+5. Note: Revoked keys cannot be re-activated you'll need to create a new key
+
+## Important Notes
+
+- API keys are scoped to organizations, not individual projects
+- You can use `project_id` or `project_name` when creating traces (project names are resolved within your organization)
+- Revoked API keys cannot be re-activated create a new key if needed
+- API keys are validated on every request that uses them
+- You must be a member of the organization to create API keys
+- The "last used" timestamp is updated automatically each time the key is used

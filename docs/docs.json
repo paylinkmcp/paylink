@@ -37,6 +37,17 @@
                 ]
               }
             ]
+          },
+          {
+            "group": "Additional Resources",
+            "expanded": true,
+            "pages": [
+              "resources/organization",
+              "resources/project",
+              "resources/wallet",
+              "resources/api-key"
+              
+            ]
           }
         ]
       }

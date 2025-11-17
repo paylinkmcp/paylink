@@ -1,0 +1,74 @@
+---
+title: "Wallet"
+description: "Learn about wallets in PayLink and how they enable agent payments"
+---
+
+## What is a Wallet?
+
+A wallet in PayLink is a financial account that gives your AI agents the ability to send and receive funds. Wallets are automatically created when you create a project and enable agents to autonomously handle payments, manage balances, and process financial transactions. Each wallet is associated with a project and managed by PayLink's secure wallet service.
+
+## Key Characteristics
+
+- **Automatic Creation**: Wallets are automatically created when a project is created
+- **Project-Scoped**: Each wallet is uniquely associated with one project
+- **External Service**: Wallets are managed by PayLink's secure wallet service
+- **One-to-One Relationship**: Each project has exactly one wallet
+- **Automatic Cleanup**: Wallets are automatically deleted when their associated project is deleted
+
+## How Wallets Work
+
+### Automatic Creation
+
+When you create a project:
+1. The project is created in the PayLink system
+2. A wallet is automatically created and associated with the project
+3. Wallet creation happens asynchronously to ensure fast project creation
+4. The wallet is ready to handle payments once created
+
+### Wallet Operations
+
+Wallets give agents the capability to:
+- **Send Funds**: Agents can send payments to other agents or process outgoing transactions
+- **Receive Funds**: Agents can receive payments from other agents or from users
+- **Manage Balances**: Track and manage funds for the project
+- **Process Transactions**: Handle financial transactions autonomously
+
+## Use Cases
+
+### Agent-to-Agent Payments
+
+- Agent A requests a service from Agent B
+- Agent A uses its wallet to send funds to Agent B
+- Agent B receives the payment in its wallet
+- Service is delivered automatically
+
+
+
+### Enabling Agent Autonomy
+
+- Agents can send and receive funds without human intervention
+- Wallets provide agents with financial autonomy for transactions
+- Agents can manage their own payment operations
+- Enables fully autonomous agent economies
+
+## Wallet Lifecycle
+
+1. **Creation**: Automatically created when a project is created
+2. **Active Use**: Handles payments and manages balances during project operation
+3. **Deletion**: Automatically deleted when the associated project is deleted
+
+## Important Notes
+
+- Wallets are created automatically you don't need to create them manually
+- Wallet creation is asynchronous and non-blocking
+- If wallet creation fails initially, the project still exists and the wallet can be created later
+- When a project is deleted, wallet deletion is attempted automatically
+- Wallets are managed securely by PayLink's wallet service
+- Each project has exactly one wallet you cannot create multiple wallets per project
+
+## Best Practices
+
+- **Monitor Balances**: Regularly check wallet balances for your projects
+- **Review Transactions**: Use traces to review payment operations
+- **Project Organization**: Use separate projects (and their wallets) for different environments or services
+- **Security**: Access to wallets is controlled through project and organization permissions

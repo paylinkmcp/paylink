@@ -1,0 +1,73 @@
+---
+title: "Project"
+description: "Understand what a project is in PayLink and how it organizes your payment integrations"
+---
+
+## What is a Project?
+
+A project in PayLink is a logical grouping unit within an organization that represents a specific application, service, or product. Projects are the primary unit for organizing payment operations, traces, and are automatically associated with wallets upon creation.
+
+## Key Characteristics
+
+- **Organization-Scoped**: Every project must belong to exactly one organization
+- **Automatic Wallet Creation**: When a project is created, a corresponding wallet is automatically created
+- **Trace Container**: Projects collect and organize all traces related to payment operations
+- **Active Status**: Projects can be activated or deactivated without deletion
+- **Access Control**: Access to projects is controlled through organization membership
+
+## Project Structure
+
+```
+Project
+├── Wallet (automatically created)
+│   └── Manages funds and transactions
+├── Traces
+│   └── Records of payment operations
+└── Configuration
+    ├── Payment Provider Settings
+    └── Project-specific Settings
+```
+
+## Relationships
+
+- **Belongs to Organization**: Each project belongs to one organization (required)
+- **Has One Wallet**: Each project has one associated wallet (created automatically)
+- **Contains Traces**: A project can have multiple traces recording payment operations
+- **Created by User**: Each project is created by one user who must be a member of the organization
+
+## Common Use Cases
+
+- **Application Representation**: Represent a specific application or microservice
+- **Environment Separation**: Create separate projects for development, staging, and production
+- **Service Organization**: Organize payment-related operations by service or product
+- **Trace Management**: Group and track payment operations for a specific application
+
+## Creating a Project
+
+1. Log in to your PayLink organization
+2. Navigate to the Projects section
+3. Click "Create New Project"
+4. Provide a project name (required) and optional description
+5. The project is created and a wallet is automatically created for it
+
+## Automatic Wallet Creation
+
+When you create a project:
+- A wallet is automatically created and associated with the project
+- Wallet creation happens asynchronously to avoid blocking
+- If wallet creation fails initially, the project still exists and the wallet can be created later
+- The wallet is managed by PayLink's wallet service
+
+## Project Lifecycle
+
+- **Active Projects**: Can process payments and create traces
+- **Inactive Projects**: Can be deactivated without deletion, preserving historical data
+- **Project Deletion**: When a project is deleted, all associated traces are automatically deleted, and the wallet deletion is attempted
+
+## Important Notes
+
+- Projects cannot exist without an organization
+- You must be a member of the organization to create or access projects
+- Each project automatically gets its own wallet for managing funds
+- Projects serve as the primary container for tracking payment operations through traces
+- Project names should be descriptive to help identify their purpose

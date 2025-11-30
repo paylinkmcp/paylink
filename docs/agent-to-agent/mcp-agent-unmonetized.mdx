@@ -1,0 +1,438 @@
+---
+title: "MCP + Agent (Unmonetized)"
+description: "Build an MCP server and connect it to an agent without payment"
+---
+
+This guide walks you through building a complete MCP server and connecting it to an agent, without any payment requirements. This is a great starting point to understand how MCP servers work before adding monetization.
+
+<Info>
+  Before you begin, make sure you've completed the [Prerequisites](/agent-to-agent/prerequisites) to set up your environment.
+</Info>
+
+## Overview
+
+You'll learn how to:
+1. Build a complete MCP server with tool discovery and execution
+2. Mount the server on an ASGI server
+3. Connect an agent to use the MCP server
+
+## Building the MCP Server
+
+<Steps>
+  <Step title="Install dependencies">
+    Install the required packages for a basic MCP server:
+
+    <CodeGroup>
+      ```bash pip
+      pip install mcp uvicorn starlette click python-dotenv
+      ```
+      ```bash uv
+      uv add mcp uvicorn starlette click python-dotenv
+      ```
+    </CodeGroup>
+  </Step>
+
+  <Step title="Import required modules">
+    Import the necessary modules for your MCP server:
+
+    ```python lines
+    import contextlib
+    import logging
+    from collections.abc import AsyncIterator
+    from typing import Any
+
+    import click
+    import uvicorn
+    from dotenv import load_dotenv
+    from starlette.applications import Starlette
+    from starlette.routing import Mount
+    from starlette.types import Receive, Scope, Send
+
+    from mcp.server.lowlevel import Server
+    from mcp.server.streamable_http_manager import StreamableHTTPSessionManager
+    from mcp.types import TextContent
+    import mcp.types as types
+
+    load_dotenv()
+
+    logger = logging.getLogger(__name__)
+    ```
+  </Step>
+
+  <Step title="Create the MCP server instance">
+    Initialize your MCP server with a unique name:
+
+    ```python lines
+    app = Server("example-mcp-server")
+    ```
+
+    This creates the core MCP server that will handle tool discovery and execution.
+  </Step>
+
+  <Step title="Define your tools">
+    Use the `@app.list_tools()` decorator to define the tools your server exposes. Each tool specifies its name, description, and input schema:
+
+    ```python lines
+    @app.list_tools()
+    async def list_tools() -> list[types.Tool]:
+        return [
+            types.Tool(
+                name="add",
+                description="Add two integers",
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "a": {"type": "number"},
+                        "b": {"type": "number"},
+                    },
+                    "required": ["a", "b"],
+                },
+            ),
+            types.Tool(
+                name="subtract",
+                description="Subtract two integers",
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "a": {"type": "number"},
+                        "b": {"type": "number"},
+                    },
+                    "required": ["a", "b"],
+                },
+            ),
+        ]
+    ```
+
+    This function returns a list of tools that agents can discover and call. The `inputSchema` defines the JSON schema for tool parameters.
+  </Step>
+
+  <Step title="Implement tool logic">
+    Implement the `@app.call_tool()` handler to execute your tools:
+
+    ```python lines
+    @app.call_tool()
+    async def call_tool(tool_name: str, arguments: dict[str, Any]) -> list[TextContent]:
+        if tool_name == "add":
+            result = arguments["a"] + arguments["b"]
+            return [types.TextContent(type="text", text=str(result))]
+        elif tool_name == "subtract":
+            result = arguments["a"] - arguments["b"]
+            return [types.TextContent(type="text", text=str(result))]
+        else:
+            return [
+                types.TextContent(
+                    type="text", text=f"Error: Unknown tool '{tool_name}'"
+                )
+            ]
+    ```
+
+    This handler receives the tool name and arguments, executes the appropriate logic, and returns the result as a list of `TextContent` objects.
+  </Step>
+
+  <Step title="Set up the ASGI server">
+    Create a StreamableHTTPSessionManager and an ASGI handler to serve your MCP server:
+
+    ```python lines
+    session_manager = StreamableHTTPSessionManager(
+        app=app,
+        event_store=None,
+        json_response=json_response,
+        stateless=True,
+    )
+
+    async def handle_streamable_http(
+        scope: Scope, receive: Receive, send: Send
+    ) -> None:
+        try:
+            await session_manager.handle_request(scope, receive, send)
+        except Exception:
+            logger.exception("Streamable HTTP error")
+    ```
+
+    This handler processes incoming MCP protocol requests and routes them to your server.
+  </Step>
+
+  <Step title="Mount the server and start it">
+    Create a Starlette application with the MCP handler mounted and start the server:
+
+    ```python lines
+    @contextlib.asynccontextmanager
+    async def lifespan(starlette_app: Starlette) -> AsyncIterator[None]:
+        async with session_manager.run():
+            yield
+
+    routes = [
+        Mount("/mcp", app=handle_streamable_http),
+    ]
+
+    starlette_app = Starlette(debug=True, lifespan=lifespan, routes=routes)
+    uvicorn.run(starlette_app, host="0.0.0.0", port=port, log_level=log_level.lower())
+    ```
+
+    The server is mounted at `/mcp` and will handle MCP protocol requests. The lifespan context manager ensures the session manager is properly initialized and cleaned up.
+  </Step>
+
+  <Step title="Run the server">
+    Save your code to a file (e.g., `main.py`) and run it:
+
+    <CodeGroup>
+      ```bash uv
+      uv run main.py
+      ```
+      ```bash python
+      python main.py
+      ```
+    </CodeGroup>
+
+    You can also specify custom options:
+
+    ```bash
+    uv run main.py --port 5003 --log-level INFO
+    ```
+
+    When the server starts successfully, you'll see output like:
+
+    ```
+    INFO:     Started server process [10785]
+    INFO:     Waiting for application startup.
+    2025-11-30 16:37:34,757 - mcp.server.streamable_http_manager - INFO - StreamableHTTP session manager started
+    INFO:     Application startup complete.
+    INFO:     Uvicorn running on http://0.0.0.0:5003 (Press CTRL+C to quit)
+    ```
+
+    Your MCP server is now running and ready to accept tool calls at `http://0.0.0.0:5003/mcp`.
+  </Step>
+</Steps>
+
+## Complete Example
+
+Here's the complete example of an unmonetized MCP server:
+
+```python lines expandable
+import contextlib
+import logging
+from collections.abc import AsyncIterator
+from typing import Any
+
+import click
+import uvicorn
+from dotenv import load_dotenv
+from starlette.applications import Starlette
+from starlette.routing import Mount
+from starlette.types import Receive, Scope, Send
+
+from mcp.server.lowlevel import Server
+from mcp.server.streamable_http_manager import StreamableHTTPSessionManager
+from mcp.types import TextContent
+import mcp.types as types
+
+load_dotenv()
+
+logger = logging.getLogger(__name__)
+
+
+@click.command()
+@click.option("--port", default=5003, help="Port to listen on for HTTP")
+@click.option(
+    "--log-level",
+    default="INFO",
+    help="Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)",
+)
+@click.option(
+    "--json-response",
+    is_flag=True,
+    default=False,
+    help="Enable JSON responses for StreamableHTTP",
+)
+def main(
+    port: int | None = None,
+    log_level: str | None = None,
+    json_response: bool | None = None,
+) -> None:
+    logging.basicConfig(
+        level=getattr(logging, log_level.upper()),
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    )
+
+    app = Server("example-mcp-server")
+
+    @app.list_tools()
+    async def list_tools() -> list[types.Tool]:
+        return [
+            types.Tool(
+                name="add",
+                description="Add two integers",
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "a": {"type": "number"},
+                        "b": {"type": "number"},
+                    },
+                    "required": ["a", "b"],
+                },
+            ),
+            types.Tool(
+                name="subtract",
+                description="Subtract two integers",
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "a": {"type": "number"},
+                        "b": {"type": "number"},
+                    },
+                    "required": ["a", "b"],
+                },
+            ),
+        ]
+
+    @app.call_tool()
+    async def call_tool(tool_name: str, arguments: dict[str, Any]) -> list[TextContent]:
+        if tool_name == "add":
+            result = arguments["a"] + arguments["b"]
+            return [types.TextContent(type="text", text=str(result))]
+        elif tool_name == "subtract":
+            result = arguments["a"] - arguments["b"]
+            return [types.TextContent(type="text", text=str(result))]
+        else:
+            return [
+                types.TextContent(
+                    type="text", text=f"Error: Unknown tool '{tool_name}'"
+                )
+            ]
+
+    session_manager = StreamableHTTPSessionManager(
+        app=app,
+        event_store=None,
+        json_response=json_response,
+        stateless=True,
+    )
+
+    async def handle_streamable_http(
+        scope: Scope, receive: Receive, send: Send
+    ) -> None:
+        try:
+            await session_manager.handle_request(scope, receive, send)
+        except Exception:
+            logger.exception("Streamable HTTP error")
+
+    @contextlib.asynccontextmanager
+    async def lifespan(starlette_app: Starlette) -> AsyncIterator[None]:
+        async with session_manager.run():
+            yield
+
+    routes = [
+        Mount("/mcp", app=handle_streamable_http),
+    ]
+
+    starlette_app = Starlette(debug=True, lifespan=lifespan, routes=routes)
+    uvicorn.run(starlette_app, host="0.0.0.0", port=port, log_level=log_level.lower())
+
+
+if __name__ == "__main__":
+    main()
+```
+
+## Connecting an Agent to Your MCP Server
+
+Now that your MCP server is running, you can connect an agent to use its tools. Here's how to create a simple LangChain agent that connects to your unmonetized MCP server:
+
+<Steps>
+  <Step title="Install LangChain and PayLink">
+    Install the required packages:
+
+    <CodeGroup>
+      ```bash pip
+      pip install langchain paylink
+      ```
+      ```bash uv
+      uv add langchain paylink
+      ```
+    </CodeGroup>
+  </Step>
+
+  <Step title="Create the agent">
+    Use PayLink's LangChain integration to connect to your MCP server:
+
+    ```python lines
+    from langchain.agents import create_agent
+    from langchain.chat_models import init_chat_model
+    from paylink.integrations.langchain_tools import PayLinkTools
+
+    # Initialize the language model
+    llm = init_chat_model(model="gpt-4o-mini")
+
+    # Connect to your MCP server
+    client = PayLinkTools(base_url="http://0.0.0.0:5003/mcp")
+
+    # Get the tools from the MCP server
+    tools = client.list_tools()
+
+    # Create the agent with the MCP tools
+    agent = create_agent(
+        model=llm,
+        tools=tools
+    )
+    ```
+
+    The `PayLinkTools` class connects to your MCP server at the specified URL and automatically discovers available tools. These tools are then made available to your LangChain agent.
+  </Step>
+
+  <Step title="Use the agent">
+    You can now use the agent to interact with your MCP server tools:
+
+    ```python lines
+    # Invoke the agent with a query
+    response = agent.invoke("What is 5 + 3?")
+    print(response)
+    ```
+
+    The agent will automatically use the `add` tool from your MCP server to perform the calculation.
+  </Step>
+</Steps>
+
+## Complete Agent Example
+
+Here's a complete example of a LangChain agent using your unmonetized MCP server:
+
+```python lines expandable
+from langchain.agents import create_agent
+from langchain.chat_models import init_chat_model
+from paylink.integrations.langchain_tools import PayLinkTools
+
+# Initialize the language model
+llm = init_chat_model(model="gpt-4o-mini")
+
+# Connect to your MCP server
+client = PayLinkTools(base_url="http://0.0.0.0:5003/mcp")
+
+# Get the tools from the MCP server
+tools = client.list_tools()
+
+# Create the agent with the MCP tools
+agent = create_agent(
+    model=llm,
+    tools=tools
+)
+
+# Use the agent
+response = agent.invoke("What is 10 + 5?")
+print(response)
+```
+
+## Full Working Example
+
+For a complete, working example of an unmonetized MCP server and agent, see the [basic-mcp-agent](https://github.com/paylinkmcp/basic-mcp-agent) repository on GitHub.
+
+## What you achieved
+
+<Check>
+  - You built a complete MCP server with tool discovery and execution
+  - You mounted the server on an ASGI server using Starlette and uvicorn
+  - You connected a LangChain agent to your MCP server using PayLinkTools
+  - Your agent can now call tools from your MCP server
+</Check>
+
+## Next steps
+
+Now that you have a working MCP server and agent connection, learn how to [add monetization to your MCP server and allow your agent to pay for the tools](/agent-to-agent/mcp-agent-monetized).
+

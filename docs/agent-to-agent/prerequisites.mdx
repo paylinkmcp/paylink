@@ -1,0 +1,56 @@
+---
+title: "Prerequisites"
+description: "Set up your environment and account before implementing Agent to Agent payments"
+---
+
+<Steps>
+  <Step title="Install PayLink">
+    Make sure PayLink is installed in your environment. Follow the [Installation](/get-started/install) guide if you still need to set it up.
+  </Step>
+
+  <Step title="Create a PayLink account">
+    Ensure you have a PayLink account created. Follow the [Create an account](/get-started/create-an-account) guide if you haven't already.
+  </Step>
+
+  <Step title="Create two separate projects">
+    This walkthrough showcases an example of how to monetize an MCP server and how to use that MCP in an agent, allowing the agent to pay for tool invocations.
+
+    You'll need to create two separate projects on PayLink. Each project will automatically create wallets attached to those projects. Create one project called **MCP** and another called **AGENT**. In real-world applications, these should live on two different accounts, but for testing purposes, you can have them on the same account.
+
+    If you want to learn more about how PayLink organizes **projects** and **wallets**, see the [Project](/resources/project) and [Wallet](/resources/wallet) guides.
+
+    <Frame>
+      <img src="/images/install/create_project.png" alt="Create project screen in PayLink dashboard" />
+    </Frame>
+  </Step>
+
+  <Step title="Set up wallet connection strings">
+    Navigate to each project's **Wallets** tab in the PayLink dashboard and copy the connection token for each wallet.
+
+    <Frame>
+      <img src="/images/wallet/wallet.png" alt="Wallet dashboard showing connection tokens" />
+    </Frame>
+
+    **In your MCP project**, create an `.env` file with the following:
+
+    ```bash
+    MCP_WALLET_CONNECTION_STRING="your_mcp_wallet_connection_string"
+    ```
+
+    **In your agent project**, create an `.env` file with the following:
+
+    ```bash
+    WALLET_CONNECTION_STRING="your_agent_connection_string"
+    ```
+
+    Replace the placeholder values with the actual connection tokens from your PayLink projects.
+  </Step>
+</Steps>
+
+
+### Next Steps
+
+Now that you have your environment configured and wallet connection token ready, you can:
+- Build a basic [MCP server without payment](/agent-to-agent/mcp-agent-unmonetized) to understand the fundamentals
+- Add [monetization to your MCP server](/agent-to-agent/mcp-agent-monetized) to require payment from agents
+

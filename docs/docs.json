@@ -45,7 +45,9 @@
             "group": "Agent to Agent",
             "expanded": true,
             "pages": [
-              "agent-to-agent/setup"
+              "agent-to-agent/prerequisites",
+              "agent-to-agent/mcp-agent-unmonetized",
+              "agent-to-agent/mcp-agent-monetized"
             ]
           },
           {

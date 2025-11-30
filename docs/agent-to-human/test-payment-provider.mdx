@@ -1,0 +1,144 @@
+---
+title: "Test Payment Provider"
+description: "Test your M-Pesa payment provider connection using PayLink"
+---
+
+After configuring your environment, test your M-Pesa payment provider connection to ensure everything is set up correctly.
+
+<Steps>
+  <Step title="Initialize PayLink client">
+    Import and initialize the PayLink client:
+
+    ```python
+    from paylink import PayLink
+
+    client = PayLink()
+    ```
+  </Step>
+
+  <Step title="List available tools">
+    List all available tools to verify your connection:
+
+    ```python
+    list_tools = client.list_tools()
+    print(list_tools)
+    ```
+
+    **Example response:**
+
+    ```python
+    [Tool(name='stk_push', title=None, description="Initiates M-Pesa Express (STK Push) payment on behalf of a customer. Sends a payment prompt to the customer's phone requesting them to enter their M-Pesa PIN to authorize and complete payment.", inputSchema={'type': 'object', 'properties': {'amount': {'type': 'string', 'description': 'Amount to be transacted (only whole numbers supported).', 'pattern': '^[0-9]+$'}, 'phone_number': {'type': 'string', 'description': "Customer's M-Pesa registered phone number to receive the payment prompt (format: 2547XXXXXXXX).", 'pattern': '^2547[0-9]{8}$'}, 'account_reference': {'type': 'string', 'description': 'Reference identifier for the transaction (max 12 characters). This will be displayed to the customer in the payment prompt.', 'maxLength': 12}, 'transaction_desc': {'type': 'string', 'description': 'Description of what the payment is for (max 13 characters).', 'maxLength': 13}}, 'required': ['amount', 'phone_number', 'account_reference', 'transaction_desc']}, outputSchema=None, icons=None, annotations=None, meta=None)]
+    ```
+
+    <Accordion title="Tool Attributes">
+
+      <ParamField path="name" type="string" required>
+        The unique identifier for the tool (e.g., `"stk_push"`).
+      </ParamField>
+
+      <ParamField path="title" type="string | None">
+        Optional display title for the tool.
+      </ParamField>
+
+      <ParamField path="description" type="string">
+        A human-readable description of what the tool does.
+      </ParamField>
+
+      <ParamField path="inputSchema" type="dict" required>
+        JSON schema defining the required and optional parameters for the tool. Contains `type`, `properties`, and `required` fields.
+      </ParamField>
+
+      <ParamField path="outputSchema" type="dict | None">
+        JSON schema defining the expected output format of the tool.
+      </ParamField>
+
+      <ParamField path="icons" type="list | None">
+        Optional list of icon identifiers for the tool.
+      </ParamField>
+
+      <ParamField path="annotations" type="list | None">
+        Optional list of annotations or metadata associated with the tool.
+      </ParamField>
+
+      <ParamField path="meta" type="dict | None">
+        Additional metadata about the tool.
+      </ParamField>
+
+    </Accordion>
+  </Step>
+
+  <Step title="Invoke a tool">
+    The tool name is `mpesa`. The tool requires the following parameters:
+
+    ```python
+    tool_name = "mpesa"
+
+    params = {
+        "amount": "1",
+        "phone_number": "your phone number",
+        "account_reference": "test",
+        "transaction_desc": "test"
+    }
+    ```
+
+    Now call the tool:
+
+    ```python
+    response = client.call_tool(
+        tool_name,
+        params
+    )
+    print(response)
+    ```
+
+    **Example response:**
+
+    ```python
+    meta=None content=[TextContent(type='text', text='{\n  "status": "success",\n  "message": "Success. Request accepted for processing",\n  "merchant_request_id": "fe0e-47f1-8ce8-2f3d326b82df19963",\n  "checkout_request_id": "ws_CO_30112025102557814797357665",\n  "amount": "1",\n  "phone_number": "254797357665",\n  "reference": "test"\n}', annotations=None, meta=None)] structuredContent=None isError=False
+    ```
+
+    <Accordion title="Response Attributes">
+
+      <ParamField path="meta" type="dict | None">
+        Optional metadata associated with the response.
+      </ParamField>
+
+      <ParamField path="content" type="list" required>
+        List of content blocks returned by the tool. Each block contains the response data, typically as `TextContent` objects with the tool's output.
+      </ParamField>
+
+      <ParamField path="structuredContent" type="dict | None">
+        Optional structured representation of the response content.
+      </ParamField>
+
+      <ParamField path="isError" type="boolean" required>
+        Indicates whether the tool invocation resulted in an error. `False` means the call was successful.
+      </ParamField>
+
+    </Accordion>
+  </Step>
+</Steps>
+
+## <Icon icon="check-circle" size={20} /> Expected Results
+
+If your configuration is correct, you should see:
+
+- ✓ Tools listed successfully (including `stk_push`)
+- ✓ Tool invocation returns a success response with `checkout_request_id`
+- ✓ Payment prompt sent to the specified phone number
+
+If you encounter errors, verify:
+
+- Your `PAYLINK_API_KEY` is valid and active
+- Your `PAYLINK_PROJECT` matches the project name in your dashboard
+- Your M-Pesa Daraja credentials are correct
+- Your `MPESA_BASE_URL` points to the correct environment (sandbox or production)
+
+<Tip>
+  Use sandbox credentials while testing to avoid live charges.
+</Tip>
+
+## <Icon icon="arrow-right" size={20} /> Next Steps
+
+Now that your payment provider is working correctly, you're ready to build your agent. Proceed to [Build Agent](/agent-to-human/build-agent) to integrate PayLink into your AI agent workflow.
+

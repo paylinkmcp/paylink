@@ -1,0 +1,51 @@
+---
+title: "Prerequisites"
+description: "Set up your environment and account before implementing Agent to Human payments"
+---
+
+<Steps>
+  <Step title="Install PayLink">
+    Make sure PayLink is installed and configured locally. Follow the [Installation](/get-started/install) guide if you haven't already.
+  </Step>
+
+  <Step title="Create a PayLink account">
+    Ensure you have a PayLink account created. Follow the [Create an account](/get-started/create-an-account) guide if you haven't already.
+  </Step>
+
+  <Step title="Configure your environment">
+    To be able to trace tool invocation, we need the following:
+
+    ```bash
+    PAYLINK_API_KEY="paylink api key"
+    PAYLINK_PROJECT="Paylink project"
+    PAYLINK_TRACING="enabled"
+    ```
+
+    After creating a project on PayLink platform, copy the project name and update your `.env`. Create an API key and update the `.env` as well.
+
+    PayLink will support different payment providers, but currently we only support M-Pesa, so set:
+
+    ```bash
+    PAYMENT_PROVIDER=["mpesa"]
+    ```
+
+    Create an account on M-Pesa Daraja and obtain the following:
+
+    ```bash
+    MPESA_BUSINESS_SHORTCODE="your_shortcode"
+    MPESA_CONSUMER_SECRET="your_consumer_secret"
+    MPESA_CONSUMER_KEY="your_consumer_key"
+    MPESA_CALLBACK_URL="your_callback_url"
+    MPESA_PASSKEY="mpesa_passkey"
+    MPESA_BASE_URL="nhhnh"
+    ```
+  </Step>
+</Steps>
+
+<Tip>
+  Use sandbox credentials while testing to avoid live charges.
+</Tip>
+
+###  Next Steps
+
+Now that we have our `.env` with all the variables set, let's test that everything is working correctly before building a real agent.

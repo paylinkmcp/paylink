@@ -1,7 +1,7 @@
 {
-  "$schema": "https://mintlify.com/docs.json",
+  "$schema": "https://paylinkai.app/docs.json",
   "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "Paylink Documentation",
   "colors": {
     "primary": "#000000",
     "light": "#FFFFFF",
@@ -11,7 +11,7 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Basics",
         "groups": [
           {
             "group": "Overview",
@@ -23,19 +23,29 @@
             ]
           },
           {
-            "group": "Start Building",
+            "group": "Get Started",
             "expanded": true,
             "pages": [
-              "start-building/get-started",
-              "start-building/install",
-              {
-                "group": "Integration Patterns",
-                "expanded": true,
-                "pages": [
-                  "agent-to-human/setup",
-                  "agent-to-agent/setup"
-                ]
-              }
+              "get-started/install",
+              "get-started/create-an-account"
+            ]
+          },
+          {
+            "group": "Agent to Human",
+            "expanded": true,
+            "pages": [
+              "agent-to-human/prerequisites",
+              "agent-to-human/test-payment-provider",
+              "agent-to-human/build-agent",
+              "agent-to-human/human-in-the-loop",
+              "agent-to-human/handle-webhooks"
+            ]
+          },
+          {
+            "group": "Agent to Agent",
+            "expanded": true,
+            "pages": [
+              "agent-to-agent/setup"
             ]
           },
           {
